@@ -9,12 +9,12 @@
          continueAfterRunningActions = "No"
          isPathRelative = "1"
          filePath = "src/testApp.cpp"
-         timestampString = "369330980.476407"
+         timestampString = "370441989.424879"
          startingColumnNumber = "9223372036854775807"
          endingColumnNumber = "9223372036854775807"
-         startingLineNumber = "798"
-         endingLineNumber = "798"
-         landmarkName = "testApp::guiEvent2(ofxUIEventArgs &amp;e)"
+         startingLineNumber = "1569"
+         endingLineNumber = "1569"
+         landmarkName = "testApp::loadXmlResults()"
          landmarkType = "5">
       </FileBreakpoint>
    </FileBreakpoints>
