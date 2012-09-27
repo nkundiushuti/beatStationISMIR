@@ -139,28 +139,28 @@ public:
     
     //HIGHSCORES
     struct scores{
+        int uid;
         string name;
         float score;
         int noTapped;
     };    
     struct MyClassComp
     {
-        explicit MyClassComp(string i) { n = i;}
-        inline bool operator()(const scores & m) const { return m.name == n; }
-        string n;
+        explicit MyClassComp(int i) { n = i;}
+        inline bool operator()(const scores & m) const { return m.uid == n; }
+        int n;
     };    
     vector<scores> highscores; 
     void saveXmlScores(string fileName);        
     void loadXmlScores(string fileName);
     void getScoreTable();
-    int findName(string nToFind);    
-    void insertScore (string i, float s, int n);    
+    int findName(int idToFind);    
+    void insertScore (int u, string i, float s, int n);    
     static bool compareByLength(const scores &a, const scores &b)
     {
         if (a.score == b.score)
             return (a.noTapped > b.noTapped);
         else return a.score > b.score;   
     }
-    int getName(string nToFind);
      
 };

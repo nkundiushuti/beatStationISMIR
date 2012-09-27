@@ -1541,7 +1541,7 @@ void testApp::callScript()
 //load the results from the xml
 void testApp::loadXmlResults()
 {
-    ofSleepMillis(1 * 1000);
+    ofSleepMillis(2 * 1000);
     float score=0.0;
     int numTapped = 0;
     
@@ -1565,12 +1565,12 @@ void testApp::loadXmlResults()
         
     }
     
-    insertScore(usert.getName(), score, numTapped);
+    insertScore(usert.getID(), usert.getName(), score, numTapped);
     std::sort(highscores.begin(), highscores.end(), compareByLength);
     
     text.clear();text.str("");
     text << "Your tapping score is " << score << ". <> You have tapped " << numTapped << " songs.";    
-    text << " <> Your position in the highscore table is " << findName(usert.getName()) << "." ;
+    text << " <> Your position in the highscore table is " << findName(usert.getID())+1 << "." ;
     if (numTapped < numSounds) text << " <> You can improve your score by resuming tapping at a later time.";
     //needs to be replaced with the actual results
     results.setText(text.str());
@@ -1611,30 +1611,9 @@ bool testApp::is_number(string s)
 
 
 //--------------HIGHSCORES
-int testApp::findName(string nToFind)
+int testApp::findName(int idToFind)
 {
-    std::vector<scores>::iterator iter = std::find_if(highscores.begin(), highscores.end(), MyClassComp(nToFind));
-    size_t index = std::distance(highscores.begin(), iter);
-    if(index == highscores.size())
-    {
-        return -1;
-    }
-    else return index+1;
-}
-
-void testApp::insertScore (string i, float s, int n)
-{ 
-    scores uscore;
-    uscore.name = i;
-    uscore.score = s;
-    uscore.noTapped = n;
-    highscores.push_back(uscore);
-}  
-
-
-int testApp::getName(string nToFind)
-{
-    vector<scores>::iterator iter = find_if(highscores.begin(), highscores.end(), MyClassComp(nToFind));
+    std::vector<scores>::iterator iter = std::find_if(highscores.begin(), highscores.end(), MyClassComp(idToFind));
     size_t index = std::distance(highscores.begin(), iter);
     if(index == highscores.size())
     {
@@ -1642,6 +1621,27 @@ int testApp::getName(string nToFind)
     }
     else return index;
 }
+
+void testApp::insertScore (int u, string i, float s, int n)
+{ 
+    int exists = findName(u);
+    if (exists > -1)
+    {
+        highscores[exists].uid = u;
+        highscores[exists].name = i;
+        highscores[exists].score = s;
+        highscores[exists].noTapped = n;
+    }
+    else
+    {
+        scores uscore;
+        uscore.uid = u;
+        uscore.name = i;
+        uscore.score = s;
+        uscore.noTapped = n;
+        highscores.push_back(uscore);
+    }
+}  
 
 void testApp::saveXmlScores(string fileName)
 {
@@ -1656,6 +1656,7 @@ void testApp::saveXmlScores(string fileName)
         xmlUser.addTag( "user" );
         xmlUser.pushTag( "user" , i);
         //set the values 
+        xmlUser.setValue("id", highscores[i].uid);
         xmlUser.setValue("name", highscores[i].name);
         xmlUser.setValue("score", highscores[i].score);
         xmlUser.setValue("noTapped", highscores[i].noTapped);
@@ -1684,7 +1685,7 @@ void testApp::loadXmlScores(string fileName)
                 //get records from the xml
                 for(int i = 0; i < xmlUser.getNumTags("user"); i++){
                     xmlUser.pushTag("user", i);            
-                    insertScore(xmlUser.getValue("name", ""), xmlUser.getValue("score",0.0), xmlUser.getValue("noTapped", 0));
+                    insertScore(xmlUser.getValue("id",0), xmlUser.getValue("name", ""), xmlUser.getValue("score",0.0), xmlUser.getValue("noTapped", 0));
                     xmlUser.popTag();                        
                 }      
                 std::sort(highscores.begin(), highscores.end(), compareByLength);

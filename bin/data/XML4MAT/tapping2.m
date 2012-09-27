@@ -31,7 +31,7 @@ songOrder = str2num(y{3}.songIndexes)+1;
 
 for i=1:numTapped,
 
-   tappedBeats{songOrder(i)} = str2num(y{i+3}.song{3}.transcription)/1000;
+   tappedBeats{songOrder(i)} = str2num(y{i+3}.song{4}.transcription)/1000;
 
 
    if (easyEval)
