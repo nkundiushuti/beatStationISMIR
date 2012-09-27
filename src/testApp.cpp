@@ -32,6 +32,7 @@ void testApp::setup() {
     usert.setID(-1);  
     usert.currentSound = -1;
     fromStart = FALSE;
+    askResults = FALSE;
     
     
     //LOAD SOUNDS
@@ -202,7 +203,9 @@ void testApp::setup() {
     gui4->addWidgetSouthOf(new ofxUIRotarySlider(dim*3, 0, 100, 0.0, "%"),"SONG ID");
     gui4->addWidgetEastOf(new ofxUISlider("VOL", 0.0, 99.0, 75.0, dim, dim * 3),"%");  
     playl->setLabel("PLAY");
-    
+    ofxUILabel *errors1 = (ofxUILabel*) new ofxUILabel("PLEASE WAIT...", OFX_UI_FONT_MEDIUM);
+    errors1->setVisible(FALSE);
+    gui4->addWidgetEastOf(errors1,"QUIT");
     ofAddListener(gui4->newGUIEvent, this, &testApp::guiEvent4); 
     //gui4->centerWidgets();
     gui4->setDrawBack(false);
@@ -217,6 +220,9 @@ void testApp::setup() {
     ofxUISpacer* spacer2 = new ofxUISpacer(1.3*length, results.getHeight(), "SPACER2");
     gui5->addWidgetDown(spacer2);    
     gui5->addWidgetDown(new ofxUIButton("FINISH",false, dim*2, dim*2)); 
+    ofxUILabel *errors2 = (ofxUILabel*) new ofxUILabel("PLEASE WAIT...", OFX_UI_FONT_MEDIUM);
+    errors2->setVisible(FALSE);
+    gui5->addWidgetEastOf(errors2,"FINISH");
     spacer2->setVisible(FALSE);
     ofAddListener(gui5->newGUIEvent, this, &testApp::guiEvent5);     
     gui5->setDrawBack(false);  
@@ -306,8 +312,33 @@ void testApp::update() {    //cout << ofGetElapsedTimeMillis() << " ";
     beats.setVolume(volume->getValue());
     
     
-    //WAIT FOR MATLAB SCRIPT TO END
-    if (launchScript) matlabScript.waitForThread();
+    
+    if (launchScript) 
+    {        
+        //WAIT FOR MATLAB SCRIPT TO END
+        matlabScript.waitForThread();          
+        
+        if (askResults)
+        {
+            ofxUILabel *errors1 = (ofxUILabel*) gui4->getWidget("PLEASE WAIT...");
+            ofxUILabel *errors2 = (ofxUILabel*) gui5->getWidget("PLEASE WAIT...");
+            
+            if (!matlabScript.isRunning()) 
+            {
+                errors1->setVisible(FALSE);
+                errors2->setVisible(FALSE);
+                loadXmlResults();
+                saveXmlScores("data/scores.xml");
+                toggleResults = TRUE;
+                askResults = FALSE;
+            } 
+            else 
+            {
+                errors1->setVisible(TRUE);
+                errors2->setVisible(TRUE);
+            }
+        }
+    }
     
     
     //USER MANAGEMENT, TCP CLIENT/SERVER
@@ -639,9 +670,9 @@ void testApp::draw() {
         ofxUIRectangle *rect = (ofxUIRectangle *) button->getRect();          
         //scoreTable.drawJustified(rect->getX(), rect->getY() + rect->getHeight() + instructions1.getHeight() + button->getPadding(), 2.2*scoreTable.getWidth());
         scoreTable1.drawLeft(rect->getX(), rect->getY() + rect->getHeight() + instructions1.getHeight() + button->getPadding());
-        scoreTable2.drawCenter(2*itemDimGUI +rect->getX()+scoreTable1.getWidth(), rect->getY() + rect->getHeight() + instructions1.getHeight() + button->getPadding());
-        scoreTable3.drawCenter(5*itemDimGUI +rect->getX()+scoreTable1.getWidth()+scoreTable2.getWidth(), rect->getY() + rect->getHeight() + instructions1.getHeight() + button->getPadding());
-        scoreTable4.drawCenter(7*itemDimGUI +rect->getX()+scoreTable1.getWidth()+scoreTable2.getWidth()+scoreTable3.getWidth(), rect->getY() + rect->getHeight() + instructions1.getHeight() + button->getPadding());
+        //scoreTable2.drawCenter(2*itemDimGUI +rect->getX()+scoreTable1.getWidth(), rect->getY() + rect->getHeight() + instructions1.getHeight() + button->getPadding());
+        scoreTable3.drawCenter(2*itemDimGUI +rect->getX()+scoreTable1.getWidth(), rect->getY() + rect->getHeight() + instructions1.getHeight() + button->getPadding());
+        scoreTable4.drawCenter(5*itemDimGUI +rect->getX()+scoreTable1.getWidth()+scoreTable3.getWidth(), rect->getY() + rect->getHeight() + instructions1.getHeight() + button->getPadding());
         
     }
     if (toggleInstructions2)
@@ -985,15 +1016,14 @@ void testApp::guiEvent4(ofxUIEventArgs &e)
             if (launchScript) 
             {
                 callScript();
-                loadXmlResults();
-                saveXmlScores("data/scores.xml");
-                toggleResults = TRUE;
+                askResults = TRUE;
             }
             
             //load gui
             toggleInstructions1 = FALSE;
             toggleScore = FALSE;
             toggleInstructions11 = FALSE;
+            toggleInstructions3 = FALSE;
             gui4->disable();
             gui5->enable();
             button->setValue(FALSE);
@@ -1069,18 +1099,18 @@ void testApp::guiEvent4(ofxUIEventArgs &e)
                 if (launchScript) 
                 {
                     callScript();
-                    loadXmlResults();
-                    saveXmlScores("data/scores.xml");
-                    toggleResults = TRUE;
+                    askResults = TRUE;
                 }
                 
                 //load gui
                 toggleInstructions1 = FALSE;
                 toggleInstructions11 = FALSE;
+                toggleInstructions3 = FALSE;
                 toggleScore = FALSE;
                 gui4->disable();
                 gui5->enable();
                 button->setValue(FALSE);
+                played = 0;
             }
             else //we move the beggining
             {
@@ -1541,7 +1571,7 @@ void testApp::callScript()
 //load the results from the xml
 void testApp::loadXmlResults()
 {
-    ofSleepMillis(2 * 1000);
+    //ofSleepMillis(2 * 1000);
     float score=0.0;
     int numTapped = 0;
     

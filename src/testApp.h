@@ -122,6 +122,7 @@ public:
     
     //MATLAB
     threadedObject	matlabScript;
+    bool askResults;
     void callScript();  
     void loadXmlResults();
     
