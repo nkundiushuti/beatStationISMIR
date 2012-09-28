@@ -50,7 +50,7 @@ bestFive = mean(sortedscores(1:5));
 %write the results
 results=[];
 results.Score = bestFive;
-results.OverallMean = mean(amlT);
+results.OverallMean = sum(amlT);
 results.numTapped = numTapped;
 results.Results = 'results';
 xmlwrite=mat2xml(results,'results');

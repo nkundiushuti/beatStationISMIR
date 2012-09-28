@@ -217,7 +217,7 @@ void testApp::setup() {
     gui5->addWidgetDown(new ofxUILabel("THANK YOU!", OFX_UI_FONT_LARGE)); 
     gui5->addSpacer(1.3*length, 2); 
     gui5->addWidgetDown(new ofxUILabel("ID", OFX_UI_FONT_MEDIUM));
-    ofxUISpacer* spacer2 = new ofxUISpacer(1.3*length, results.getHeight(), "SPACER2");
+    ofxUISpacer* spacer2 = new ofxUISpacer(length, results.getHeight(), "SPACER2");
     gui5->addWidgetDown(spacer2);    
     gui5->addWidgetDown(new ofxUIButton("FINISH",false, dim*2, dim*2)); 
     ofxUILabel *errors2 = (ofxUILabel*) new ofxUILabel("PLEASE WAIT...", OFX_UI_FONT_MEDIUM);
@@ -727,6 +727,7 @@ void testApp::exit() {
     matlabScript.stop();
     
     delete gui1;
+    //use this if you plan to use quiz
     //delete gui2;
     delete gui3;
     delete gui4;
@@ -1193,7 +1194,20 @@ void testApp::loadTapping(int stage)
 {
     //if the user tapped everything before we just present him the results
     if (usert.currentSound >= numSounds)
-    {           
+    {   
+        //compute and load results
+        if (launchScript) 
+        {
+            askResults = TRUE;
+        }
+        
+        //ADD WIDGETS
+        //user
+        text.clear();text.str("");
+        text << "YOUR USER ID: " << usert.getName() << " ";
+        ofxUILabel *userL1 = (ofxUILabel *) gui5->getWidget("ID");
+        userL1->setLabel(text.str());
+        
         //load gui
         gui1->disable();
         gui5->enable();
@@ -1244,6 +1258,8 @@ void testApp::loadTapping(int stage)
         toggleInstructions3 = FALSE;
         toggleScore = FALSE;
         gui4->enable(); 
+        
+        played = 0;
     }
 }
 
@@ -1479,7 +1495,7 @@ void testApp::loadXmlTap(string fileName)
         if (xmlTap.tagExists("tapping"))
         {   
             //cout << usert.getID() << " " << 
-            if (usert.getID() != xmlTap.getAttribute("tapping", "userID", 0)) usert.currentSound=0;
+            if (usert.getID() != xmlTap.getAttribute("tapping", "userID", 0, 0)) usert.currentSound=0;
             else 
             {
                 xmlTap.pushTag("tapping");
@@ -1488,12 +1504,12 @@ void testApp::loadXmlTap(string fileName)
                 
                 string transcript="";
                 int t;
-                for(int i = 0; i < xmlTap.getNumTags("song"); i++){                    
-                    xmlTap.pushTag("song", i);
-                    usert.sounds[i].songID = xmlTap.getAttribute("song", "songID", i);   
-                    usert.sounds[i].tryNo = xmlTap.getAttribute("song", "tryNo", i);  
+                for(int i = 0; i < xmlTap.getNumTags("song"); i++){     
+                    usert.sounds[i].songID = xmlTap.getAttribute("song", "songID", i,  i);   
+                    usert.sounds[i].tryNo = xmlTap.getAttribute("song", "tryNo", 1, i);  
                     //xmlTap.getValue("filename", "");
                     
+                    xmlTap.pushTag("song", i);
                     //load transcription
                     transcript = xmlTap.getValue("transcription", "");      
                     text.clear();text.str("");
@@ -1589,7 +1605,7 @@ void testApp::loadXmlResults()
         {  
             xmlTap.pushTag("results");
             //load results
-            score = xmlTap.getValue("Score", 0.0);            
+            score = xmlTap.getValue("OverallMean", 0.0);            
             xmlTap.popTag();  
         }
         
