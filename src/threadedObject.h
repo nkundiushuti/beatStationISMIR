@@ -53,7 +53,7 @@ class threadedObject : public ofThread{
                     count++;
                     system(path.c_str());
 					unlock();
-					//ofSleepMillis(1 * 1000);
+                    //ofSleepMillis(1 * 1000);
                     stop();
 				}
 			}

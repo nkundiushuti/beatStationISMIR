@@ -315,16 +315,21 @@ void testApp::update() {    //cout << ofGetElapsedTimeMillis() << " ";
     
     if (launchScript) 
     {        
-        //WAIT FOR MATLAB SCRIPT TO END
-        matlabScript.waitForThread();          
+               
         
         if (askResults)
         {
             ofxUILabel *errors1 = (ofxUILabel*) gui4->getWidget("PLEASE WAIT...");
             ofxUILabel *errors2 = (ofxUILabel*) gui5->getWidget("PLEASE WAIT...");
+            ofxUIButton *finish = (ofxUIButton*) gui5->getWidget("FINISH");
+            
+            errors1->setVisible(TRUE);
+            errors2->setVisible(TRUE);
             
             if (!matlabScript.isRunning()) 
             {
+                //ofSleepMillis(1 * 1000);  
+                finish->setVisible(TRUE);
                 errors1->setVisible(FALSE);
                 errors2->setVisible(FALSE);
                 loadXmlResults();
@@ -332,11 +337,6 @@ void testApp::update() {    //cout << ofGetElapsedTimeMillis() << " ";
                 toggleResults = TRUE;
                 askResults = FALSE;
             } 
-            else 
-            {
-                errors1->setVisible(TRUE);
-                errors2->setVisible(TRUE);
-            }
         }
     }
     
@@ -1016,6 +1016,13 @@ void testApp::guiEvent4(ofxUIEventArgs &e)
             //compute and load results
             if (launchScript) 
             {
+                //ofResetElapsedTimeCounter();
+                ofxUILabel *errors1 = (ofxUILabel*) gui4->getWidget("PLEASE WAIT...");
+                ofxUILabel *errors2 = (ofxUILabel*) gui5->getWidget("PLEASE WAIT...");
+                ofxUIButton *finish = (ofxUIButton*) gui5->getWidget("FINISH");
+                finish->setVisible(FALSE);
+                errors1->setVisible(TRUE);
+                errors2->setVisible(TRUE);
                 callScript();
                 askResults = TRUE;
             }
@@ -1099,6 +1106,13 @@ void testApp::guiEvent4(ofxUIEventArgs &e)
                 //compute and load results
                 if (launchScript) 
                 {
+                    //ofResetElapsedTimeCounter();
+                    ofxUILabel *errors1 = (ofxUILabel*) gui4->getWidget("PLEASE WAIT...");
+                    ofxUILabel *errors2 = (ofxUILabel*) gui5->getWidget("PLEASE WAIT...");
+                    ofxUIButton *finish = (ofxUIButton*) gui5->getWidget("FINISH");
+                    finish->setVisible(FALSE);
+                    errors1->setVisible(TRUE);
+                    errors2->setVisible(TRUE);
                     callScript();
                     askResults = TRUE;
                 }
@@ -1159,7 +1173,9 @@ void testApp::guiEvent5(ofxUIEventArgs &e)
     
     //finish
     if ((e.widget->getName() == "FINISH") && (button->getValue()==1))	
-    {        
+    { 
+        matlabScript.stop();
+        
         //we move go the beggining
         //clear the data
         usert.setName("");
@@ -1587,6 +1603,10 @@ void testApp::callScript()
 //load the results from the xml
 void testApp::loadXmlResults()
 {
+    
+    //WAIT FOR MATLAB SCRIPT TO END
+    matlabScript.waitForThread(); 
+    
     //ofSleepMillis(2 * 1000);
     float score=0.0;
     int numTapped = 0;
@@ -1618,6 +1638,7 @@ void testApp::loadXmlResults()
     text << "Your tapping score is " << score << ". <> You have tapped " << numTapped << " songs.";    
     text << " <> Your position in the highscore table is " << findName(usert.getID())+1 << "." ;
     if (numTapped < numSounds) text << " <> You can improve your score by resuming tapping at a later time.";
+    else text << " <> You tapped all the songs.";
     //needs to be replaced with the actual results
     results.setText(text.str());
     results.wrapTextX(ofGetHeight()-OFX_UI_GLOBAL_WIDGET_SPACING);     

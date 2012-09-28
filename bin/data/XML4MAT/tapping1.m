@@ -40,7 +40,7 @@ for i=1:numTapped,
 amlT(songOrder(i))=be_amlCem(tkdata{songOrder(i)}.beats,tappedBeats{songOrder(i)},params);
    end
 
-
+end
 
 % take average of best five
 [sortedscores,inds]=sort(amlT,'descend');
@@ -58,10 +58,10 @@ file_id = fopen(xmloutput, 'w');
 fprintf(file_id, "%s",xmlwrite);
 fclose(file_id);
 %xml_write(xmloutput, results);
-%exit;
+exit;
 %keyboard
 
-end
+
 
 function [cmlC,cmlT,amlC,amlT] = be_continuityBased(anns,beats,params)
 

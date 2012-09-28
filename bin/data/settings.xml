@@ -13,7 +13,7 @@
     <itemDimGUI>24</itemDimGUI>
     <launchScript>1</launchScript>
     <scriptDirectory>XML4MAT</scriptDirectory>
-    <appToLaunchPath>/Applications/Octave.app/Contents/Resources/bin/octave -qf --quiet --eval "clear all; cd path; tapping2('xmlin','xmlout');exit(0);"</appToLaunchPath>
+    <appToLaunchPath>/Applications/Octave.app/Contents/Resources/bin/octave -qf --quiet --eval "clear all; cd path; tapping2('xmlin','xmlout');exit;"</appToLaunchPath>
     <isClient>0</isClient>
     <tcpPort>9001</tcpPort>
     <ipServer>127.0.0.1</ipServer>
