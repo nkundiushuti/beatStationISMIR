@@ -817,7 +817,7 @@ void testApp::guiEvent1(ofxUIEventArgs &e)
         
         //GATHER USER DATA AND CHECK IT
         ofxUITextInput *uName = (ofxUITextInput *) gui1->getWidget("ID");        
-        string name = uName->getTextString(); 
+        string name = ofToLower(uName->getTextString()); 
         uName->setTextString("");
         tempName = "";
         
@@ -1007,8 +1007,7 @@ void testApp::guiEvent4(ofxUIEventArgs &e)
         if (beats.getIsPlaying()) {return;} //everything is inactive when sound is playing
         else if ((usert.currentSound == (numSounds-1)) && (played>0)) //move to the results stage
         {  
-            usert.currentSound++;
-            
+            usert.currentSound++;            
             
             //save the tapping to xml
             text.clear();text.str("");
