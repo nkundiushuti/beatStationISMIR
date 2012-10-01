@@ -107,21 +107,22 @@ void testApp::setup() {
     //GUI USER
     gui1 = new ofxUICanvas(ofGetWidth()-length,ofGetHeight()/2,ofGetWidth(),ofGetHeight());		//ofxUICanvas(float x, float y, float width, float height)    
     gui1->addWidgetDown(new ofxUILabel("BEAT STATION", OFX_UI_FONT_LARGE));
-    gui1->addSpacer(1.3*length, 2);     
+    ofxUISpacer* spaceri = new ofxUISpacer(1.1*length, 2, "SPACER");
+    gui1->addWidgetDown(spaceri);
     
     vector<string> vnames; vnames.push_back("NEW"); vnames.push_back("EXISTING"); 
     ofxUIRadio *radio = (ofxUIRadio *) gui1->addWidgetDown(new ofxUIRadio("USER", vnames, OFX_UI_ORIENTATION_VERTICAL, dim, dim )); 
     radio->activateToggle("NEW"); 
     newUser = TRUE;    
     
-    gui1->addSpacer(1.3*length, 2); 
+    gui1->addSpacer(1.1*length, 2); 
     gui1->addWidgetDown(new ofxUIButton("START",false, dim*2, dim*2, OFX_UI_FONT_MEDIUM)); 
     gui1->addWidgetRight(new ofxUIButton("SCORES",false, dim*2, dim*2, OFX_UI_FONT_MEDIUM));
     ofAddListener(gui1->newGUIEvent, this, &testApp::guiEvent1); 
     
     gui1->addWidgetEastOf(new ofxUILabel("NAME", OFX_UI_FONT_MEDIUM),"USER");
     gui1->addWidgetSouthOf(new ofxUITextInput("ID", "", (length-xInit)/2),"NAME");
-    ofxUILabel *errors = (ofxUILabel*) new ofxUILabel("ERRORS", OFX_UI_FONT_MEDIUM);
+    ofxUILabel *errors = (ofxUILabel*) new ofxUILabel("ERRORS", OFX_UI_FONT_SMALL);
     errors->setVisible(FALSE);
     gui1->addWidgetSouthOf(errors,"ID");  
     //gui1->centerWidgets();
@@ -158,10 +159,10 @@ void testApp::setup() {
     gui3 = new ofxUICanvas(ofGetWidth()-length,ofGetHeight()/2,ofGetWidth(),ofGetHeight());
     gui3->disable();      
     gui3->addWidgetDown(new ofxUILabel("INSTRUCTIONS", OFX_UI_FONT_LARGE)); 
-    gui3->addSpacer(1.3*length, 2); 
+    gui3->addSpacer(1.1*length, 2); 
     gui3->addWidgetDown(new ofxUILabel("ID", OFX_UI_FONT_MEDIUM));
     gui3->setDrawBack(false);
-    ofxUISpacer* spacer = new ofxUISpacer(1.3*length, instructions2.getHeight(), "SPACER");
+    ofxUISpacer* spacer = new ofxUISpacer(1.1*length, instructions2.getHeight(), "SPACER");
     spacer->setVisible(FALSE);
     gui3->addWidgetDown(spacer);
     gui3->addWidgetDown(new ofxUIButton("START",false, dim*2, dim*2, OFX_UI_FONT_MEDIUM));
@@ -169,8 +170,8 @@ void testApp::setup() {
     gui3->addWidgetEastOf(sp, "SPACER");
     img = new ofImage(); 
     img->loadImage("screen.png"); 
-    ofxUIImage* guimg = new ofxUIImage(ofGetHeight()-length, 0, img->width, img->height, img, "SNAPSHOT OF THE TAPPING INTERFACE", TRUE);
-    gui3->addWidgetEastOf(guimg, "SPACER1");
+    ofxUIImage* guimg = new ofxUIImage(2*itemDimGUI + ofGetHeight()-length, 0, img->width, img->height, img, "SNAPSHOT OF THE TAPPING INTERFACE", TRUE);
+    gui3->addWidgetEastOf(guimg, "SPACER");
     sp->setVisible(FALSE);
     ofAddListener(gui3->newGUIEvent, this, &testApp::guiEvent3); 
     
@@ -179,7 +180,7 @@ void testApp::setup() {
     gui4 = new ofxUICanvas(ofGetWidth()-length,ofGetHeight()/2,ofGetWidth(),ofGetHeight());
     gui4->disable();      
     gui4->addWidgetDown(new ofxUILabel("ID", OFX_UI_FONT_LARGE)); 
-    gui4->addSpacer(1.3*length, 2); 
+    gui4->addSpacer(1.1*length, 2); 
     
     ofxUIButton* play = new ofxUIButton("PLAYF",false, dim*2, dim*2);
     play->setLabelVisible(FALSE);
@@ -188,7 +189,7 @@ void testApp::setup() {
     next->setLabelVisible(FALSE);
     gui4->addWidgetDown(next);
     
-    gui4->addSpacer(1.3*length, 2);  
+    gui4->addSpacer(1.1*length, 2);  
     
     gui4->addWidgetDown(new ofxUIButton("INSTRUCTIONS",false, dim*2, dim*2));
     ofxUIButton* quitButton = new ofxUIButton("QUIT",false, dim*2, dim*2);
@@ -215,7 +216,7 @@ void testApp::setup() {
     gui5 = new ofxUICanvas(ofGetWidth()-length,ofGetHeight()/2,ofGetWidth(),ofGetHeight());
     gui5->disable(); 
     gui5->addWidgetDown(new ofxUILabel("THANK YOU!", OFX_UI_FONT_LARGE)); 
-    gui5->addSpacer(1.3*length, 2); 
+    gui5->addSpacer(1.1*length, 2); 
     gui5->addWidgetDown(new ofxUILabel("ID", OFX_UI_FONT_MEDIUM));
     ofxUISpacer* spacer2 = new ofxUISpacer(length, results.getHeight(), "SPACER2");
     gui5->addWidgetDown(spacer2);    
@@ -647,6 +648,7 @@ void testApp::draw() {
     // update the sound playing system:
 	ofSoundUpdate();	
     
+        
     if (toggleInstructions1)
     {
         //draw instructions
@@ -659,9 +661,9 @@ void testApp::draw() {
     {
         //draw instructions
         //instructions.drawJustified(0, 0, instructions.getWidth());
-        ofxUILabel *label = (ofxUILabel *) gui1->getWidget("BEAT STATION");
+        ofxUISpacer *label = (ofxUISpacer *) gui1->getWidget("SPACER");
         ofxUIRectangle *rect = (ofxUIRectangle *) label->getRect();  
-        instructions11.drawLeft(ofGetHeight() - rect->getX() ,rect->getY());
+        instructions11.drawLeft(2*itemDimGUI + rect->getX() + rect->getWidth() ,rect->getY());
     }
     if (toggleScore)
     {
